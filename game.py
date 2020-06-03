@@ -1,4 +1,5 @@
 import numpy as np
+import constants as const
 
 
 class Game:
@@ -12,7 +13,7 @@ class Game:
         """
         self.turn = 0
         self.board_size = board_size
-        self.board = np.zeros((board_size, board_size), dtype=int)
+        self.board = np.zeros((board_size, board_size), dtype=np.int8)
 
     def has_won(self, color) -> bool:
         """
@@ -25,7 +26,8 @@ class Game:
         Returns:
             a boolean if the color has won (true) or not (false)
         """
-        pass
+        
+        
 
     def print_board(self):
         """
@@ -80,20 +82,20 @@ class Game:
         Returns:
             list of tuples of all neighboring tiles to the given tile in (x, y) format that match the given color
         """
-        pass
+        return [(x, y) for (x, y) in self._get_all_neighbors(x, y) if self.board[x][y] == color]
 
 
 if __name__ == '__main__':
     game_board = Game()
-    is_red = False
+    is_red = True
     while game_board.turn < game_board.board_size ** 2:
         game_board.print_board()
         line_in = input('please input a move in format \"row col\"\n')
         coords = line_in.split(' ')
         if is_red:
-            game_board.board[int(coords[0])][int(coords[1])] = 1
+            game_board.board[int(coords[0])][int(coords[1])] = const.RED
         else:
-            game_board.board[int(coords[0])][int(coords[1])] = 2
+            game_board.board[int(coords[0])][int(coords[1])] = const.BLUE
 
         game_board.turn += 1
         is_red = not is_red
