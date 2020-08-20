@@ -26,12 +26,7 @@ class TestGameMethods(unittest.TestCase):
 
         self.assertEqual(set(g._get_neighbors_by_color(1, 1, const.BLUE)), {(2, 0), (2, 1)})
         self.assertEqual(set(g._get_neighbors_by_color(0, 0, const.RED)), {(1, 0), (0, 1)})
-
         self.assertEqual(set(g._get_neighbors_by_color(3, 3, const.BLUE)), set())
-
-
-
-        
 
     def test_has_won(self):
         pass
