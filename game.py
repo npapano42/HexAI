@@ -14,6 +14,7 @@ class Game:
         self.turn = 0
         self.board_size = board_size
         self.board = np.zeros((board_size, board_size), dtype=np.int8)
+        self.moves = [(x, y) for x in range(board_size) for y in range(board_size)]
 
     # TODO: save some intermediate work to speed up computation for future calls in the same game
     # TODO: test aggressively, IS NOT CONFIRMED TO WORK
@@ -122,6 +123,55 @@ class Game:
         """
         return {(x, y) for (x, y) in self._get_all_neighbors(x, y) if self.board[x][y] == color}
 
+    def make_move(self, x: int, y : int, color: int) -> bool:
+        """
+        Makes a move at (x, y) by placing the color at that location, if it is available.
+        If available, plays move and removes location from list of available moves
+
+        Parameters:
+            x : int
+                the x coordinate of the location
+            y : int
+                the y coordinate of the location
+            color : int
+                the color to place at (x,y) on the board [note: see constants for numbering]
+
+        Returns:
+            True if move was successful, false if location was taken
+        """
+        if self.is_empty(x, y):
+            self.board[x][y] = color
+            self.moves.remove((x, y))
+            return True
+        return False
+
+    def is_empty(self, x: int, y : int) -> bool:
+        """
+        Checks to see if location (x, y) is empty, meaning no move has been played there already
+
+        Parameters:
+            x : int
+                the x coordinate of the location
+            y : int
+                the y coordinate of the location
+
+        Returns:
+            True if empty, false otherwise
+        """
+        return self.board[x][y] == 0
+
+    def get_random_empty_moves(self, n: int) -> np.ndarray:
+        """
+        Gets random empty locations on the board, such that the locations have a value of 0.
+
+        Parameters:
+            n : int
+                number of moves to get
+
+        Returns:
+            An ndarray of tuples, each of which has a value of 0 on the board.
+        """
+        return np.random.default_rng().choice(self.moves, n, replace=False)
 
 if __name__ == '__main__':
     game_board = Game()
