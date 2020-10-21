@@ -1,5 +1,6 @@
 import numpy as np
 import constants as const
+import DisjointSet
 
 
 class Game:
@@ -15,12 +16,14 @@ class Game:
         self.board_size = board_size
         self.board = np.zeros((board_size, board_size), dtype=np.int8)
         self.moves = [(x, y) for x in range(board_size) for y in range(board_size)]
+        self.djs = DisjointSet.DisjointSet(board_size)
 
     # TODO: save some intermediate work to speed up computation for future calls in the same game
     # TODO: test aggressively, IS NOT CONFIRMED TO WORK
     def has_won(self, color) -> bool:
         """
-        Checks if the given color has won
+        Checks if the given color has won, employing an optimized disjoint set algorithm.
+        When has_won is called, the disjoint sets are evaluated for a winner.
 
         Parameters:
             color : int
@@ -29,53 +32,17 @@ class Game:
         Returns:
             a boolean if the color has won (true) or not (false)
         """
-        if self.turn < self.board_size * 2:
-            return False
-
-        seen_nodes = set()
-        chain = []
-        if color == const.BLUE:  # blue: check vertically for win
-            for i in range(self.board_size):
-                if self.board[i][0] == color:
-                    # add all starting nodes
-                    seen_nodes.add((i, 0))
-                    chain.append((i, 0))
-
-            while len(chain) != 0:  # while nodes are unvisited
-                next_node = chain.pop()
-                neighbors = self._get_neighbors_by_color(next_node[0], next_node[1],
-                                                         self.board[next_node[0]][next_node[1]])
-                for n in neighbors:
-                    if n[0] == self.board_size - 1:  # if a neighbor is on the other side, chain exists, game over
-                        return True
-                    if n not in seen_nodes:  # if n hasn't been seen, mark as seen and add to list
-                        seen_nodes.add(n)
-                        chain.append(n)
-
-        else:  # red: check horizontally for win
-            for i in range(self.board_size):
-                if self.board[0][i] == color:
-                    seen_nodes.add((0, i))
-                    chain.append((0, i))
-
-            while len(chain) != 0:  # while nodes are unvisited
-                next_node = chain.pop()
-                neighbors = self._get_neighbors_by_color(next_node[0], next_node[1],
-                                                         self.board[next_node[0]][next_node[1]])
-                for n in neighbors:
-                    if n[1] == self.board_size - 1:  # if a neighbor is on the other side, chain exists, game over
-                        return True
-                    if n not in seen_nodes:  # if n hasn't been seen, mark as seen and add to list
-                        seen_nodes.add(n)
-                        chain.append(n)
-        return False
+        # if color == const.RED: # evaluate top/down
+        #     for next_set in self.djs.sets:
+        #
+        # else: # evaluate left/right
 
     def print_board(self):
         """
         Prints the board to console
         """
         for i in range(self.board[0].size):
-            print(' '*i + str(self.board[i]))
+            print(' ' * i + str(self.board[i]))
 
     def _get_all_neighbors(self, x: int, y: int) -> set:
         """
@@ -123,7 +90,7 @@ class Game:
         """
         return {(x, y) for (x, y) in self._get_all_neighbors(x, y) if self.board[x][y] == color}
 
-    def make_move(self, x: int, y : int, color: int) -> bool:
+    def make_move(self, x: int, y: int, color: int) -> bool:
         """
         Makes a move at (x, y) by placing the color at that location, if it is available.
         If available, plays move and removes location from list of available moves
@@ -142,10 +109,13 @@ class Game:
         if self.is_empty(x, y):
             self.board[x][y] = color
             self.moves.remove((x, y))
+            for loc_x, loc_y in self._get_neighbors_by_color(x, y, color):
+                self.djs.union_sets(self.djs.get_node(x, y), self.djs.get_node(loc_x, loc_y))
+            self.djs.visualize()
             return True
         return False
 
-    def is_empty(self, x: int, y : int) -> bool:
+    def is_empty(self, x: int, y: int) -> bool:
         """
         Checks to see if location (x, y) is empty, meaning no move has been played there already
 
@@ -173,17 +143,22 @@ class Game:
         """
         return np.random.default_rng().choice(self.moves, n, replace=False)
 
+
 if __name__ == '__main__':
     game_board = Game()
     is_red = True
     while game_board.turn < game_board.board_size ** 2:
         game_board.print_board()
-        line_in = input('please input a move in format \"row col\"\n')
-        coords = line_in.split(' ')
+        player_color = const.BLUE
         if is_red:
-            game_board.board[int(coords[0])][int(coords[1])] = const.RED
-        else:
-            game_board.board[int(coords[0])][int(coords[1])] = const.BLUE
+            player_color = const.RED
+        while True:
+            line_in = input('please input a move in format \"row col\"\n')
+            coords = line_in.split(' ')
+            if game_board.make_move(int(coords[0]), int(coords[1]), player_color):
+                break
+            else:
+                print("Move already taken!")
 
         game_board.turn += 1
         is_red = not is_red
