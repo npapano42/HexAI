@@ -67,7 +67,7 @@ class mctsagent:
 	"""
 	EXPLORATION = 1
 
-	def __init__(self, state=gamestate(8)):
+	def __init__(self, state=gamestate(11)):
 		self.root_state = deepcopy(state)
 		self.root = node()
 
@@ -76,7 +76,7 @@ class mctsagent:
 		Return the best move according to the current tree.
 		"""
 		if self.root_state.winner() != gamestate.PLAYERS["none"]:
-			return gamestate.GAMEOVER
+			return gamestate.GAMEEND
 
 		# choose the move of the most simulated node breaking ties randomly
 		max_value = max(self.root.children, key=lambda n: n.N).N
@@ -86,7 +86,7 @@ class mctsagent:
 
 	def move(self, move):
 		"""
-		Make the passed move and update the tree approriately.
+		Make the passed move and update the tree appropriately.
 		"""
 		for child in self.root.children:
 			# make the child associated with the move the new root
@@ -137,7 +137,7 @@ class mctsagent:
 			# if some child node has not been explored select it before expanding
 			# other children
 			if node.N == 0:
-				return (node, state)
+				return node, state
 
 		# if we reach a leaf node generate its children and return one of them
 		# if the node is terminal, just return the terminal node

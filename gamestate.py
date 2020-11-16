@@ -10,7 +10,7 @@ class gamestate:
     and returning information about it.
     """
     # dictionary associating numbers with players for book keeping
-    PLAYERS = {"none": 0, "white": 1, "black": 2}
+    PLAYERS = {"none": 0, "white": 1, "black": -1}
 
     # move value of -1 indicates the game has ended so no move is possible
     GAMEEND = -1
@@ -32,6 +32,7 @@ class gamestate:
         self.board = np.zeros((size, size))
         self.white_groups = unionfind()
         self.black_groups = unionfind()
+        self.move_list = []
 
     def play(self, cell):
         """
@@ -50,6 +51,7 @@ class gamestate:
         """
         if self.board[cell] == self.PLAYERS["none"]:
             self.board[cell] = self.PLAYERS["white"]
+            self.move_list.append(cell)
         else:
             raise ValueError("Cell occupied")
         # if the placed cell touches a white edge connect it appropriately
@@ -68,6 +70,7 @@ class gamestate:
         """
         if self.board[cell] == self.PLAYERS["none"]:
             self.board[cell] = self.PLAYERS["black"]
+            self.move_list.append(cell)
         else:
             raise ValueError("Cell occupied")
         # if the placed cell touches a black edge connect it appropriately

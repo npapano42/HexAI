@@ -198,7 +198,7 @@ class gtpinterface:
         self.agent.search(self.move_time)
         move = self.agent.best_move()
 
-        if move == gamestate.GAMEOVER:
+        if move == gamestate.GAMEEND:
             return False, "The game is already over"
         self.game.play(move)
         self.agent.move(move)
@@ -206,7 +206,7 @@ class gtpinterface:
 
     def gtp_time(self, args):
         """
-        Change the time per move allocated to the search agent (in units of secounds)
+        Change the time per move allocated to the search agent (in units of seconds)
         """
         if len(args) < 1:
             return False, "Not enough arguments"
