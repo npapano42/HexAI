@@ -1,9 +1,7 @@
 import keras
 import numpy as np
-import pydot
 import tensorflow as tf
 from keras.optimizers import SGD
-from keras.utils.vis_utils import plot_model
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
 
@@ -45,4 +43,7 @@ model.add(Dense(121))
 model.compile(loss="mean_squared_error", optimizer=SGD(lr=0.01, momentum=0.9))
 
 model.summary()
+
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+
 # model.save("MCNN")
