@@ -18,8 +18,7 @@ class Game:
         self.moves = [(x, y) for x in range(board_size) for y in range(board_size)]
         self.djs = DisjointSet.DisjointSet(board_size)
 
-    # TODO: save some intermediate work to speed up computation for future calls in the same game
-    # TODO: test aggressively, IS NOT CONFIRMED TO WORK
+
     def has_won(self, color) -> bool:
         """
         Checks if the given color has won, employing an optimized disjoint set algorithm.
