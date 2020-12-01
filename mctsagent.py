@@ -48,7 +48,7 @@ class node:
 		yet to be thoroughly explored versus nodes that seem to have a high win
 		rate.
 		Currently explore is set to zero when choosing the best move to play so
-		that the move with the highest winrate is always chossen. When searching
+		that the move with the highest winrate is always chosen. When searching
 		explore is set to EXPLORATION specified above.
 		"""
 		# unless explore is set to zero, maximally favor unexplored nodes

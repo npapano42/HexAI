@@ -4,9 +4,6 @@ import tensorflow as tf
 from keras.optimizers import SGD
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
-
-
-
 # input_board = Input(shape=(11, 11, 1))
 # print(input_board)
 # x = Conv2D(4, (3, 3), activation='relu', padding='same')(input_board)
@@ -21,12 +18,15 @@ from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 # print(flat)
 
 
-input_board = np.zeros((11, 11), dtype=np.int8)
+# input_board = np.zeros((11, 11), dtype=np.int8)
 
-input_board = np.asarray([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0], [0, 0, 0, 2, 0, 0, 1, 0, 2, 0, 0], [0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0], [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+input_board = np.asarray(
+    [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0], [0, 0, 0, 2, 0, 0, 1, 0, 2, 0, 0],
+     [0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0], [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 input_board = np.expand_dims(input_board, 2)
-
 
 model = tf.keras.Sequential()
 model.add(Conv2D(4, (3, 3), strides=1, activation='relu', padding='same', input_shape=(11, 11, 1)))
