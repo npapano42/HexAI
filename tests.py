@@ -10,7 +10,7 @@ class TestGenTestData(unittest.TestCase):
         self.assertTrue(os.path.isfile("test_data/game0"))
 
     def test_flip_board(self):
-        gen_test_data.flip_board("test_data/game0")
+        gen_test_data._flip_board("test_data/game0")
         self.assertTrue(os.path.isfile("test_data/game0-d"))
 
     def test_create_board(self):

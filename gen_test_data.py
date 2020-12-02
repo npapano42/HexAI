@@ -2,6 +2,7 @@ from sys import stderr
 from mctsagent import mctsagent
 from gamestate import gamestate
 from gtpinterface import gtpinterface
+import os
 import time
 import random
 
@@ -26,7 +27,7 @@ def generate_test_data(rollout_time=30, game_amt=10000):
         output_file.close()
 
 
-def flip_board(input_file_name):
+def _flip_board(input_file_name):
     """
     Flips a board given an input file. Writes a new flipped board back in the same location, with the suffix -d attached
 
@@ -77,6 +78,17 @@ def read_from_file(input_file_name):
 
     Returns a gtpinterface of the game
     """
+    return create_board(_get_move_list(input_file_name))
+
+
+def _get_move_list(input_file_name):
+    """
+    Gets the move list from an input file
+
+    input_file_name: a string that is the file name
+
+    Returns a list of gtpinterface-valid moves
+    """
     input_file = open(input_file_name, "r")
     line = input_file.readline()
     # split moves
@@ -84,8 +96,7 @@ def read_from_file(input_file_name):
     # slice off brackets
     file_moves[0] = file_moves[0][2:]
     file_moves[-1] = file_moves[-1][:-2]
-
-    return create_board([_convert_to_move(move) for move in file_moves])
+    return [_convert_to_move(move) for move in file_moves]
 
 
 def _convert_to_move(move):
@@ -111,6 +122,69 @@ def _flip_move(move):
     return str(move)[1:-1]
 
 
-# if __name__ == "__main__":
-#
-#
+def sort_games(test_data_folder):
+    """
+    Sorts games generated from generate_test_data into folders based on the winner, ignoring games without winners
+
+    test_data_folder: the folder where games are placed
+    """
+    for game_file in os.listdir(test_data_folder):
+        file_name = test_data_folder + "/" + game_file
+        interface = read_from_file(file_name)
+        if interface.gtp_winner([])[1] == "none":
+            print("no win")
+        elif interface.gtp_winner([])[1] == "white":
+            os.rename(file_name, "white_wins/" + game_file)
+        else:  # black wins
+            os.rename(file_name, "black_wins/" + game_file)
+
+
+def flip_and_rollback_all_boards():
+    """
+    Calls _flip_board and _rollback_game on all the games in their sorted locations
+    """
+    # flip games
+    loc = "white_wins/"
+    for game_file in os.listdir(loc):
+        _flip_board(loc + game_file)
+    loc = "black_wins/"
+    for game_file in os.listdir(loc):
+        _flip_board(loc + game_file)
+
+    # rollback games
+    loc = "white_wins/"
+    for game_file in os.listdir(loc):
+        _rollback_game(loc + game_file)
+    loc = "black_wins/"
+    for game_file in os.listdir(loc):
+        _rollback_game(loc + game_file)
+
+
+def _rollback_game(input_file_name):
+    # read given file into a game
+    moves = _get_move_list(input_file_name)
+
+    for i in range(len(moves)):
+        rollback_moves = moves[:(-1*i-1)]
+
+        # if the rollback results in an empty move
+        if len(rollback_moves) == 0:
+            continue
+
+        agent = mctsagent(gamestate(11))
+        interface = gtpinterface(agent)
+
+        # apply all moves
+        for move in rollback_moves:
+            turn = 'w' if interface.game.turn() == 1 else 'b'
+            interface.gtp_play([turn, move])
+
+        # write game to file
+        flip_file = open(input_file_name + "-rollback-" + str(i+1), "w")
+        flip_file.write(str(interface.game.move_list))
+        flip_file.close()
+
+
+if __name__ == "__main__":
+    sort_games("test_data")
+    flip_and_rollback_all_boards()
