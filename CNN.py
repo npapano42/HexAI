@@ -95,7 +95,7 @@ def train():
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
     model_history = model.fit(x=x_train, y=y_train,
                               validation_data=(x_test, y_test),
-                              epochs=, batch_size=32, verbose=1, callbacks=[early_stop])
+                              epochs=50, batch_size=32, verbose=1, callbacks=[early_stop])
     # model.save("CNN_hex_model")
     print(model_history.history.keys())
 
