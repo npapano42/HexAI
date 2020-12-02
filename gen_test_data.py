@@ -183,6 +183,6 @@ def _rollback_game(input_file_name):
         flip_file.close()
 
 
-if __name__ == "__main__":
-    sort_games("test_data")
-    flip_and_rollback_all_boards()
+# if __name__ == "__main__":
+#     sort_games("test_data")
+#     flip_and_rollback_all_boards()

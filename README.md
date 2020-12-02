@@ -21,12 +21,12 @@ To set up the GUI, follow these steps:
 1. Go to Program -> New Program. The name can be whatever you want, but the command must be the command to run the main (`python main.py`). Working Directory should be left blank
 2. Hit `Ok` to save, then load the program by going to Program -> Connect Local Program and selecting the name given in the previous step
 3. If you get a blank error message, that means the CLI that powers the GUI is not correctly set up
-4. Now, if it loads, you can click to play against the AI. The game stan
+4. Now, if it loads, you can start to play against the AI. The game plays in a standard, turn-based form, with the user going first. The AI will think for 30 seconds by default
 
 ## CLI commands
 CLI commands are in the form of [command] [arguments] (for example, `play w e6`, `showboard`, and `genmove`)
 
-play - Play a stone of a given colour in a given cell. 1st arg = colour (white/w or black/b). 2nd arg = cell (ex. `play b a1`). Note that turn order is not enforced, and out of order turns resets the game tree for the agent
+play - Play a stone of a given colour in a given cell. 1st arg = color (white = w or black = b). 2nd arg = cell to play (ex. `play b a1`). Note that turn order is not enforced, and out of order turns resets the game tree for the agent
 
 genmove - Asks the AI to generate a move given the current board, and plays it. Defaults the color to the next player, however a single argument for the color can be set. Note that turn order is not enforced, and out of order turns resets the game tree for the agent
 
@@ -52,12 +52,12 @@ size - Same as boardsize
 
 clear_board - Clears the board, starting a new game
 
-set_time - Sets the time the AI is given to run rollouts for. Single argument, which is the time in seconds. (ex. `set_time 120`)
+set_time - Sets the time the AI is given to run rollouts for. Takes a single argument, which is the time in seconds. (ex. `set_time 120`)
 
 winner - Displays the winner of the board, if there is one
 
 hexgui-analyze_commands - unknown **NOTE:** This operation is provided for the gtp interface to function and will not have any effect
 
 ##Additional Notes - Training
-
-For training the network, more libraiers are required. These include sklearn (scikit-learn) for splitting testing and training data, matplotlib
+For training the network, more libraries are required. These include sklearn (scikit-learn 0.23.2) for splitting testing and training data, and matplotlib (matplotlib 3.3.3) for visualizing data.
+Accelerating training by using tensorflow-gpu is also helpful (version 2.3.1 was used). This requires setup of a CUDA environment, including setting up CUDA and cuDNN on a computer with NVIDIA CUDA-compatible hardware. Both the 10.1 and 11.0 setups of CUDA were done to maximize compatibility
