@@ -1,14 +1,14 @@
-#Installation and Run Guide
+# Installation and Run Guide
 
-##Installing Python
+## Installing Python
 MCNN-Hex was originally written to run on Python 3.7.9 so this is the recommended version to install
 
-##Installing Packages
+## Installing Packages
 This program uses 2 main libraries for running the base game: Tensorflow, and numpy
 
 They can both be installed with the command `pip install tensorflow` (at the time of writing this, the version of tensorflow is 2.3.1)
 
-##Running the Game
+## Running the Game
 The game can be viewed in two ways:
 1. **<ins>The GUI:</ins>** To run the GUI, run the `hexgui.jar` file. The GUI attaches itself to the underlying CLI, but provides a better interface for users. To setup the GUI, see the setup section below. NOTE: It is recommended that the CLI be set up and run first as the GUI does not display any setup errors
 
@@ -58,6 +58,6 @@ winner - Displays the winner of the board, if there is one
 
 hexgui-analyze_commands - unknown **NOTE:** This operation is provided for the gtp interface to function and will not have any effect
 
-##Additional Notes - Training
+## Additional Notes - Training
 For training the network, more libraries are required. These include sklearn (scikit-learn 0.23.2) for splitting testing and training data, and matplotlib (matplotlib 3.3.3) for visualizing data.
 Accelerating training by using tensorflow-gpu is also helpful (version 2.3.1 was used). This requires setup of a CUDA environment, including setting up CUDA and cuDNN on a computer with NVIDIA CUDA-compatible hardware. Both the 10.1 and 11.0 setups of CUDA were done to maximize compatibility
