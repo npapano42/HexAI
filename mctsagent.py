@@ -1,13 +1,16 @@
 from gamestate import gamestate
 import time
 import random
+import numpy as np
 from math import sqrt, log
 from copy import copy, deepcopy
 from sys import stderr
 from queue import Queue
+from tensorflow import keras
+import operator
 
 inf = float('inf')
-
+model = keras.models.load_model('CNN_hex_model')
 
 class node:
 	"""
@@ -69,7 +72,7 @@ class mctsagent:
 
 	def __init__(self, state=gamestate(11)):
 		self.root_state = deepcopy(state)
-		self.root = node()
+		self.root = node()		
 
 	def best_move(self):
 		"""
@@ -154,7 +157,17 @@ class mctsagent:
 		moves = state.moves()
 
 		while state.winner() == gamestate.PLAYERS["none"]:
-			move = random.choice(moves)
+			x = []
+			for i in moves:
+				new_state = deepcopy(state)
+				new_state.play(i)
+				x.append(new_state.board)
+			y = np.array([game for game in x])
+			y = np.expand_dims(y, 3)
+			prediction = model.predict(y)
+			prediction = prediction.flatten().tolist()
+			res = {moves[i]: prediction[i] for i in range(len(moves))}
+			move = max(res.items(), key=operator.itemgetter(1))[0]
 			state.play(move)
 			moves.remove(move)
 
