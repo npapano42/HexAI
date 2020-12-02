@@ -1,13 +1,18 @@
-from gamestate import gamestate
-import time
+import operator
 import random
+import time
+from copy import deepcopy
 from math import sqrt, log
-from copy import copy, deepcopy
-from sys import stderr
 from queue import Queue
+from sys import stderr
+
+import numpy as np
+from tensorflow import keras
+
+from gamestate import gamestate
 
 inf = float('inf')
-
+model = keras.models.load_model('CNN_hex_model')
 
 class node:
 	"""
@@ -48,7 +53,7 @@ class node:
 		yet to be thoroughly explored versus nodes that seem to have a high win
 		rate.
 		Currently explore is set to zero when choosing the best move to play so
-		that the move with the highest winrate is always chossen. When searching
+		that the move with the highest winrate is always chosen. When searching
 		explore is set to EXPLORATION specified above.
 		"""
 		# unless explore is set to zero, maximally favor unexplored nodes
@@ -67,16 +72,16 @@ class mctsagent:
 	"""
 	EXPLORATION = 1
 
-	def __init__(self, state=gamestate(8)):
+	def __init__(self, state=gamestate(11)):
 		self.root_state = deepcopy(state)
-		self.root = node()
+		self.root = node()		
 
 	def best_move(self):
 		"""
 		Return the best move according to the current tree.
 		"""
 		if self.root_state.winner() != gamestate.PLAYERS["none"]:
-			return gamestate.GAMEOVER
+			return gamestate.GAMEEND
 
 		# choose the move of the most simulated node breaking ties randomly
 		max_value = max(self.root.children, key=lambda n: n.N).N
@@ -86,7 +91,7 @@ class mctsagent:
 
 	def move(self, move):
 		"""
-		Make the passed move and update the tree approriately.
+		Make the passed move and update the tree appropriately.
 		"""
 		for child in self.root.children:
 			# make the child associated with the move the new root
@@ -137,7 +142,7 @@ class mctsagent:
 			# if some child node has not been explored select it before expanding
 			# other children
 			if node.N == 0:
-				return (node, state)
+				return node, state
 
 		# if we reach a leaf node generate its children and return one of them
 		# if the node is terminal, just return the terminal node
@@ -154,7 +159,17 @@ class mctsagent:
 		moves = state.moves()
 
 		while state.winner() == gamestate.PLAYERS["none"]:
-			move = random.choice(moves)
+			x = []
+			for i in moves:
+				new_state = deepcopy(state)
+				new_state.play(i)
+				x.append(new_state.board)
+			y = np.array([game for game in x])
+			y = np.expand_dims(y, 3)
+			prediction = model.predict(y)
+			prediction = prediction.flatten().tolist()
+			res = {moves[i]: prediction[i] for i in range(len(moves))}
+			move = max(res.items(), key=operator.itemgetter(1))[0] if state.turn() == gamestate.PLAYERS["white"] else min(res.items(), key=operator.itemgetter(1))[0]
 			state.play(move)
 			moves.remove(move)
 

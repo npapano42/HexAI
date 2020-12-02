@@ -1,5 +1,5 @@
 import sys
-from mctsagent import mctsagent
+
 from gamestate import gamestate
 
 version = 0.1
@@ -37,7 +37,7 @@ class gtpinterface:
         self.game = gamestate(11)
         self.agent = agent
         self.agent.set_gamestate(self.game)
-        self.move_time = 10
+        self.move_time = 30
 
     def send_command(self, command):
         """
@@ -106,19 +106,8 @@ class gtpinterface:
 
     def gtp_boardsize(self, args):
         """
-        Set the size of the game board (will also clear the board).
+        Added to avoid crashing with gui but not implemented .
         """
-        if len(args) < 1:
-            return False, "Not enough arguments"
-        try:
-            size = int(args[0])
-        except ValueError:
-            return False, "Argument is not a valid size"
-        if size < 1:
-            return False, "Argument is not a valid size"
-
-        self.game = gamestate(size)
-        self.agent.set_gamestate(self.game)
         return True, ""
 
     def gtp_clear(self, args):
@@ -198,7 +187,7 @@ class gtpinterface:
         self.agent.search(self.move_time)
         move = self.agent.best_move()
 
-        if move == gamestate.GAMEOVER:
+        if move == gamestate.GAMEEND:
             return False, "The game is already over"
         self.game.play(move)
         self.agent.move(move)
@@ -206,7 +195,7 @@ class gtpinterface:
 
     def gtp_time(self, args):
         """
-        Change the time per move allocated to the search agent (in units of secounds)
+        Change the time per move allocated to the search agent (in units of seconds)
         """
         if len(args) < 1:
             return False, "Not enough arguments"
@@ -238,6 +227,6 @@ class gtpinterface:
 
     def gtp_analyze(self, args):
         """
-        Added to avoid crashing with gui but not yet implemented.
+        Added to avoid crashing with gui but not implemented.
         """
         return True, ""
