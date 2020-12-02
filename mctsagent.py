@@ -1,13 +1,15 @@
-from gamestate import gamestate
-import time
-import random
-import numpy as np
-from math import sqrt, log
-from copy import copy, deepcopy
-from sys import stderr
-from queue import Queue
-from tensorflow import keras
 import operator
+import random
+import time
+from copy import deepcopy
+from math import sqrt, log
+from queue import Queue
+from sys import stderr
+
+import numpy as np
+from tensorflow import keras
+
+from gamestate import gamestate
 
 inf = float('inf')
 model = keras.models.load_model('CNN_hex_model')
@@ -167,7 +169,7 @@ class mctsagent:
 			prediction = model.predict(y)
 			prediction = prediction.flatten().tolist()
 			res = {moves[i]: prediction[i] for i in range(len(moves))}
-			move = max(res.items(), key=operator.itemgetter(1))[0]
+			move = max(res.items(), key=operator.itemgetter(1))[0] if state.turn() == gamestate.PLAYERS["white"] else min(res.items(), key=operator.itemgetter(1))[0]
 			state.play(move)
 			moves.remove(move)
 

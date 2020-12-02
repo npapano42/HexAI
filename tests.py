@@ -1,6 +1,6 @@
-import unittest
-import numpy as np
 import os
+import unittest
+
 import gen_test_data
 
 

@@ -1,10 +1,8 @@
-from sys import stderr
-from mctsagent import mctsagent
+import os
+
 from gamestate import gamestate
 from gtpinterface import gtpinterface
-import os
-import time
-import random
+from mctsagent import mctsagent
 
 
 def generate_test_data(rollout_time=30, game_amt=10000):
