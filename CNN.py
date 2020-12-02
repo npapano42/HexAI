@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from sys import stderr
-from keras import callbacks
+from keras import callbacks, metrics
 from keras.optimizers import SGD
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.models import Sequential
@@ -79,7 +79,7 @@ def train():
     model.add(Flatten())
     model.add(Dense(1, activation='sigmoid'))
 
-    model.compile(loss="mean_squared_error", optimizer=SGD(lr=0.01, momentum=0.9))
+    model.compile(loss="mean_squared_error", optimizer=SGD(lr=0.01, momentum=0.9), metrics=[metrics.mean_squared_error])
 
     model.summary()
     x, y = load_from_folders()
@@ -88,27 +88,18 @@ def train():
                                          mode="min", patience=10, verbose=2,
                                          restore_best_weights=True)
 
+    early_stop = callbacks.EarlyStopping(monitor="val_mean_squared_error",
+                                         mode="min", patience=10, verbose=2,
+                                         restore_best_weights=True)
+
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
     model_history = model.fit(x=x_train, y=y_train,
                               validation_data=(x_test, y_test),
-                              epochs=1000, batch_size=32, verbose=1, callbacks=[early_stop])
+                              epochs=, batch_size=32, verbose=1, callbacks=[early_stop])
     # model.save("CNN_hex_model")
     print(model_history.history.keys())
-    # summarize history for accuracy
-    plt.plot(model_history.history['accuracy'])
-    plt.plot(model_history.history['val_accuracy'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.show()
-    # summarize history for loss
-    plt.plot(model_history.history['loss'])
-    plt.plot(model_history.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
+
+    plt.plot(model_history.history['mean_squared_error'])
     plt.show()
 
 
