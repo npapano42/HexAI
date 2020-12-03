@@ -90,7 +90,7 @@ def train():
     model.add(Flatten())
     model.add(Dense(1, activation='sigmoid'))
 
-    model.compile(loss=tf.keras.losses.MeanSquaredLogarithmicError(), optimizer=SGD(lr=0.1, momentum=0.9), metrics=[metrics.mean_squared_error])
+    model.compile(loss=tf.keras.losses.MeanSquaredLogarithmicError(), optimizer=tf.keras.optimizers.Adam(), metrics=[metrics.mean_squared_error])
 
     model.summary()
     x, y = load_from_folders()
@@ -106,14 +106,18 @@ def train():
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=42)
     model_history = model.fit(x=x_train, y=y_train,
                               validation_data=(x_test, y_test),
-                              epochs=100, batch_size=16, verbose=1, callbacks=[early_stop])
+                              epochs=100, batch_size=32, verbose=1) # callbacks=[early_stop]
     model.save("CNN_hex_model")
-    print(model_history.history.keys())
 
-    plt.plot(model_history.history['mean_squared_logarithmic_error'])
+    plt.plot(model_history.history['loss'])
+    plt.show()
+    plt.plot(model_history.history['val_loss'])
+    plt.show()
+    plt.plot(model_history.history['mean_squared_error'])
+    plt.show()
+    plt.plot(model_history.history['val_mean_squared_error'])
     plt.show()
 
 
 if __name__ == "__main__":
-    tf.config.optimizer.set_jit(False)
     train()
